@@ -7,7 +7,9 @@ extern unsigned int build_graph_json_len;
 extern unsigned char build_params_bin[];
 extern unsigned int build_params_bin_len;
 
-#define TVM_BUNDLE_FUNCTION __attribute__((visibility("default"))) extern "C"
+#define TVM_BUNDLE_FUNCTION __attribute__((visibility("default")))
+
+extern "C" {
 
 TVM_BUNDLE_FUNCTION void *tvm_runtime_create() {
   const std::string json_data(&build_graph_json[0],
@@ -44,4 +46,6 @@ TVM_BUNDLE_FUNCTION void tvm_runtime_get_output(void *handle, int index,
                                                 void *tensor) {
   reinterpret_cast<tvm::runtime::Module *>(handle)->GetFunction("get_output")(
       index, reinterpret_cast<DLTensor *>(tensor));
+}
+
 }

@@ -2,7 +2,7 @@
 TVM_ROOT=$(shell cd ../..; pwd)
 NNVM_PATH=nnvm
 DMLC_CORE=${TVM_ROOT}/3rdparty/dmlc-core
-PKG_CFLAGS = -std=c++14 -Oz -fPIC\
+PKG_CFLAGS = -std=c++14 -O0 -g3 -fPIC\
 	-I${TVM_ROOT}/include\
 	-I${DMLC_CORE}/include\
 	-I${TVM_ROOT}/3rdparty/dlpack/include\
@@ -16,7 +16,7 @@ test: $(build_dir)/demo $(build_dir)/bundle.so
 
 $(build_dir)/demo: demo.cc
 	@mkdir -p $(@D)
-	$(CXX) $(PKG_CFLAGS) -o $@  $^
+	$(CXX) $(PKG_CFLAGS) -o $@  $^ -ldl
 
 # Serialize our graph.json file.
 $(build_dir)/graph.json.cc: $(build_dir)/graph.json
@@ -33,7 +33,7 @@ $(build_dir)/model.o $(build_dir)/graph.json $(build_dir)/params.bin: build_mode
 # the serialized graph.json and params.bin
 $(build_dir)/bundle.so: bundle.cc runtime.cc $(build_dir)/model.o $(build_dir)/graph.json.cc $(build_dir)/params.bin.cc
 	@mkdir -p $(@D)
-	$(CXX) $(PKG_CFLAGS) -fvisibility=hidden -o $@  $^ $(PKG_LDFLAGS) -shared
+	$(CXX) $(PKG_CFLAGS) -fvisibility=hidden -o $@  $^ $(PKG_LDFLAGS) -shared -lpthread
 
 clean:
 	rm -r $(build_dir)
